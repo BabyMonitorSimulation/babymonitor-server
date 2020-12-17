@@ -16,3 +16,8 @@ from .model.db_model import BabyMonitor
 from .controllers import main_controller
 
 db.create_all()
+
+from .communication.client_bm import ClientBM
+
+client_bm = ClientBM()
+client_bm.subscribe()

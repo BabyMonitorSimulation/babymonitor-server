@@ -1,4 +1,4 @@
-from project import app
+from project import app, client_bm
 from flask import request, jsonify
 from project.service.bm_service import last_record, insert_data
 from project.util.validations import validate_request
@@ -8,8 +8,6 @@ from project import db
 import json
 import requests
 from pprint import pprint
-
-internal_state = "normal"
 
 """
 request to send:
@@ -48,40 +46,22 @@ def check():
 
 @app.route("/bm_status", methods=["GET"])
 def bm_status():
-    global internal_state
-    return internal_state
+    return client_bm.internal_state
 
 
 @app.route("/bm_send", methods=["GET"])
 def bm_send():
     global internal_state
     generate_data("new")
-    data = last_record()
-    msg_type = "notification" if data["crying"] or data["time_no_breathing"] > 5 else "status"
-    body = {
-        "type": msg_type,
-        "msg": data,
-        "route": {"from": "bm", "to": "smp"},
-    }
+    body = last_record()
+    msg_type = "notification" if body["crying"] or body["time_no_breathing"] > 5 else "status"
+    body['type'] = msg_type
+    body['from'] = 'bm'
+    body['to'] = 'smp'
 
     if body['type'] == 'notification':
-        internal_state = 'critical'
+        client_bm.internal_state = 'critical'
 
-
-    # Send request to smp
-    requests.post("http://localhost:5003/bm_receive", json=body)
+    client_bm.publish_to_dojot(body)  
 
     return jsonify(body), 200
-
-
-@app.route("/bm_receive", methods=["POST"])
-def bm_receive():
-    global internal_state
-    validate, msg = validate_request(request)
-
-    if not validate:
-        return jsonify({"msg": msg}), 400
-
-    internal_state = "normal"
-    pprint(request.json)
-    return "OK", 200
