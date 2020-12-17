@@ -12,7 +12,7 @@ client_bm = ClientBM()
 client_bm.subscribe()
 
 
-@app.route("/check", methods=["GET"])
+@app.route("/", methods=["GET"])
 def check():
     return "I'm working BabyMonitor"
 
@@ -20,7 +20,7 @@ def check():
 @app.route("/bm_status", methods=["GET"])
 def bm_status():
     global client_bm
-    
+
     return client_bm.internal_state
 
 
