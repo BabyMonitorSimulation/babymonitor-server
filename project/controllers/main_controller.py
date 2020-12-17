@@ -19,11 +19,15 @@ def check():
 
 @app.route("/bm_status", methods=["GET"])
 def bm_status():
+    global client_bm
+    
     return client_bm.internal_state
 
 
 @app.route("/bm_send", methods=["GET"])
 def bm_send():
+    global client_bm
+
     generate_data("new")
     body = last_record()
     msg_type = (
