@@ -9,8 +9,9 @@ class ClientBM:
         self.client.on_message = self.callback
         self.internal_state = 'normal'
 
+    # pub to bm in dojot
     def publish_to_dojot(self, data):
-        self.client.publish("/gesad/434339/attrs", payload=json.dumps(data))
+        self.client.publish("/gesad/9e4ed4/attrs", payload=json.dumps(data))
 
     def subscribe(self):
         self.client.subscribe("/gesad/9e4ed4/attrs")
