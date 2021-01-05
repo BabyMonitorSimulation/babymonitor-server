@@ -45,13 +45,8 @@ def generate_data(type):
             data['time_no_breathing'] += 1
 
     elif type == 'new': 
-        breathing = random.choices([True, False], [1, 0], k=1)[0]
-        sleeping = random.choices([True, False], None, k=1)[0]
-        crying = False if not breathing else random.choices([True, False], [1.0, 0.0], k=1)[0]
-        data = {
-            'breathing': breathing,
-            'sleeping': sleeping,
-            'crying': crying,
-            'time_no_breathing': 0
-        }
+        data['breathing'] = random.choices([True, False], [1, 0], k=1)[0]
+        data['crying'] = False if not data['breathing'] else random.choices([True, False], [1.0, 0.0], k=1)[0]
+        data["sleeping"] = False if data['crying'] else random.choices([True, False], [0, 1.0], k=1)[0]
+        data['time_no_breathing'] = 0
     insert_data(data)
