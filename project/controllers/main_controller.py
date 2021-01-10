@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from project import app
+from project import app, socketio
 from project.util.clean import clean_data
 from project.util.generate_data import generate_data
 from project.model.db_model import BabyMonitorSend, BabyMonitorReceive
@@ -51,6 +51,8 @@ def bm_send():
     data["from"] = "bm"
     data["to"] = "smp"
     client_bm.publish_to_dojot(data)
+    print(f"send {data}")
+    socketio.emit("BabyMonitorSent", data)
 
     return jsonify(data), 200
 
@@ -58,6 +60,8 @@ def bm_send():
 @app.route("/get-confirmation", methods=["POST"])
 def get_confirmation():
     print(request.json)
+    print(f"receive {request.json}")
+    socketio.emit("BabyMonitorReceive", request.json)
     last_data = BabyMonitorService(BabyMonitorSend).last_record()
     confirmation = {"id_notification": last_data["id"]}
     BabyMonitorService(BabyMonitorReceive).insert_data(confirmation)
