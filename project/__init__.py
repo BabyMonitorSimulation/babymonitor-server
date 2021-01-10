@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///appBabyMonitor.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 
-from .model.db_model import BabyMonitor
+from .model.db_model import BabyMonitorSend, BabyMonitorReceive
 from .controllers import main_controller
 
 db.create_all()

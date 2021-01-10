@@ -32,7 +32,11 @@ class BabyMonitorService:
 
 
     def last_record(self):
-        return clean_data(self.database().query.all()[-1].__dict__)
+        data = self.database().query.order_by(self.database.id.desc()).first()
+        if not data:
+            return data
+
+        return clean_data(data.__dict__)
 
 
     def get_by_id(self, id):

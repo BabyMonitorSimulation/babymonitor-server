@@ -13,7 +13,6 @@ import json
 
 client_bm = ClientBM()
 
-
 # def send_baby_data_to_smartphone():
 #     while True:
 #         generate_data("new")
@@ -41,40 +40,43 @@ def check():
 @app.route("/bm_send", methods=["GET"])
 def bm_send():
     global client_bm
-
     data_send = BabyMonitorService(BabyMonitorSend).last_record()
     data_receive = BabyMonitorService(BabyMonitorReceive).last_record()
 
     if not data_send:
         data = generate_data("new")
 
-    if data_send["type"] == "notification" and not data_receive:
+    elif data_send["type"] == "notification" and not data_receive:
         data = generate_data("repeat")
 
-    if (
+    elif (
         data_send["type"] == "notification"
         and data_receive["id_notification"] != data_send["id"]
     ):
         data = generate_data("repeat")
-    if (
+    elif (
         data_send["type"] == "notification"
         and data_receive["id_notification"] == data_send["id"]
     ):
         data = generate_data("fine")
 
-    data = generate_data("new")
+    else: 
+        data = generate_data("new")
     data["type"] = (
         "notification" if data["crying"] or data["time_no_breathing"] > 5 else "status"
     )
 
     BabyMonitorService(BabyMonitorSend).insert_data(data)
+    data['from'] = 'bm'
+    data['to'] = 'smp'
     client_bm.publish_to_dojot(data)
 
     return jsonify(data), 200
 
 
-@app.route("/get_confirmation", methods=["GET"])
+@app.route("/get-confirmation", methods=["POST"])
 def get_confirmation():
+    print(request.json)
     last_data = BabyMonitorService(BabyMonitorSend).last_data()
     confirmation = {"id_notification": last_data["id"]}
     BabyMonitorService(BabyMonitorReceive).insert_data(confirmation)

@@ -1,4 +1,6 @@
 def clean_data(data):
-    data.pop("_sa_instance_state")
-
+    try: 
+        data.pop("_sa_instance_state")
+    except: 
+        pass
     return data
