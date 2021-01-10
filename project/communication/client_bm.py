@@ -16,30 +16,17 @@ class ClientBM(mqtt.Client):
 
     # pub to bm in dojot
     def publish_to_dojot(self, data):
-        # while not self.connected: 
-        #     print('not connected')
-        #     self.connect(host="dojot.atlantico.com.br", port=1883)
         self.connect(host="dojot.atlantico.com.br", port=1883)
         self.publish("/gesad/829bac/attrs", payload=json.dumps(data), qos=1)
-        m = self.publish("/gesad/829bac/attrs", payload=json.dumps(data))
-        # while not m.is_published():
-        #     print(m.is_published())
-        #     self.connect(host="dojot.atlantico.com.br", port=1883)
-        #     m = self.publish("/gesad/829bac/attrs", payload=json.dumps(data), qos = 1)
-        #     time.sleep(1)
+        self.publish("/gesad/829bac/attrs", payload=json.dumps(data))
         self.disconnect()
-        
 
     def on_publish(self, client, userdata, result):
-        print(result)
-        
-        # while result != 0: 
-        
-        #     self.client.publish("/gesad/9e4ed4/attrs", payload=json.dumps(data))
+        print('Message published')
 
     def on_connect(self, client, userdata, flags, rc):
         self.connected = True
-        print("Connected with result code "+ str(rc))
+        print("Connected with result code " + str(rc))
 
     def subscribe(self):
         self.client.subscribe("/gesad/9e4ed4/attrs")

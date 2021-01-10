@@ -13,25 +13,6 @@ import json
 
 client_bm = ClientBM()
 
-# def send_baby_data_to_smartphone():
-#     while True:
-#         generate_data("new")
-#         body = last_record()
-#         body["type"] = (
-#             "notification"
-#             if body["crying"] or body["time_no_breathing"] > 5
-#             else "status"
-#         )
-#         body["from"] = "bm"
-#         body["to"] = "smp"
-
-#         if body["type"] == "notification":
-#             client_bm.internal_state = "critical"
-
-#         requests.post("http://localhost:5001", json=body)
-#         sleep(1)
-
-
 @app.route("/", methods=["GET"])
 def check():
     return "I'm working BabyMonitor"
@@ -60,15 +41,15 @@ def bm_send():
     ):
         data = generate_data("fine")
 
-    else: 
+    else:
         data = generate_data("new")
     data["type"] = (
         "notification" if data["crying"] or data["time_no_breathing"] > 5 else "status"
     )
 
     BabyMonitorService(BabyMonitorSend).insert_data(data)
-    data['from'] = 'bm'
-    data['to'] = 'smp'
+    data["from"] = "bm"
+    data["to"] = "smp"
     client_bm.publish_to_dojot(data)
 
     return jsonify(data), 200
@@ -77,19 +58,9 @@ def bm_send():
 @app.route("/get-confirmation", methods=["POST"])
 def get_confirmation():
     print(request.json)
-    last_data = BabyMonitorService(BabyMonitorSend).last_data()
+    last_data = BabyMonitorService(BabyMonitorSend).last_record()
     confirmation = {"id_notification": last_data["id"]}
     BabyMonitorService(BabyMonitorReceive).insert_data(confirmation)
 
+    return "OK"
 
-# babymonitor:
-# GET /start -> generate data from baby
-# GET /confirmation -> generate good status
-
-# smartphone:
-# POST /receive-data -> receive the data from baby
-# GET /confirmation -> send a confirmation to babymonitor
-
-# tv:
-# /change-status -> change the status of tv (lock or unlock)
-# /receive-notification -> receive a notification from smartphone
