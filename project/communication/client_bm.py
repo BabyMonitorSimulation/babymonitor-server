@@ -17,8 +17,8 @@ class ClientBM(mqtt.Client):
     # pub to bm in dojot
     def publish_to_dojot(self, data):
         self.connect(host="dojot.atlantico.com.br", port=1883)
-        self.publish("/gesad/829bac/attrs", payload=json.dumps(data), qos=1)
-        self.publish("/gesad/829bac/attrs", payload=json.dumps(data))
+        # self.publish("/gesad/58cb7d/attrs", payload=json.dumps(data), qos=1)
+        self.publish("/gesad/58cb7d/attrs", payload=json.dumps(data))
         self.disconnect()
 
     def on_publish(self, client, userdata, result):
@@ -27,9 +27,6 @@ class ClientBM(mqtt.Client):
     def on_connect(self, client, userdata, flags, rc):
         self.connected = True
         print("Connected with result code " + str(rc))
-
-    def subscribe(self):
-        self.client.subscribe("/gesad/9e4ed4/attrs")
 
     def callback(self):
         self.internal_state = "normal"
